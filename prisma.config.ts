@@ -9,6 +9,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Koneksi langsung (bukan lewat pooler) — dipakai CLI Prisma (migrate/studio),
+    // aman untuk DDL & advisory lock. Runtime aplikasi pakai DATABASE_URL (pooled)
+    // lewat adapter di src/lib/prisma.ts.
+    url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
   },
 });

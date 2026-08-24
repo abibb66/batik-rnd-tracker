@@ -69,31 +69,41 @@ tombol "Buka link" biasa — tidak error.
 
 ## Deploy
 
-Rencana hosting: **Vercel**. Karena filesystem Vercel ephemeral, SQLite (`dev.db`) tidak bisa
-dipakai di sana — perlu migrasi ke PostgreSQL dulu (mis. Neon, Supabase, atau Vercel Postgres)
-sebelum deploy. Langkah migrasinya nanti:
+Hosting: **Vercel**, database: **Neon Postgres** (sudah dimigrasikan, live). Repo:
+[github.com/abibb66/batik-rnd-tracker](https://github.com/abibb66/batik-rnd-tracker).
 
-1. Buat database Postgres, dapatkan connection string.
-2. Ubah `datasource.provider` di `prisma/schema.prisma` dari `sqlite` ke `postgresql`.
-3. Ganti driver adapter di [`src/lib/prisma.ts`](src/lib/prisma.ts) dari
-   `@prisma/adapter-better-sqlite3` ke `@prisma/adapter-pg` (atau adapter sesuai provider Postgres-nya).
-4. Set `DATABASE_URL` (dan `AUTH_SECRET` — generate baru, jangan pakai punya dev) di env
-   Vercel project settings.
-5. `npx prisma migrate deploy` ke database baru, lalu deploy.
+Env var yang harus di-set di Vercel project settings:
+- `DATABASE_URL` — connection string Neon yang **pooled** (host berakhiran `-pooler`), dipakai
+  runtime aplikasi lewat `@prisma/adapter-pg` di [`src/lib/prisma.ts`](src/lib/prisma.ts).
+- `AUTH_SECRET` — secret produksi terpisah dari dev (generate lewat
+  `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`).
 
-Belum dikerjakan karena belum ada connection string Postgres — lanjutkan kapan pun siap.
+`postinstall` script (`prisma generate`) otomatis jalan tiap `npm install` di build Vercel —
+tanpa ini build gagal karena `src/generated/prisma` sengaja tidak di-commit (lihat `.gitignore`).
+
+Migrasi skema ke database baru dijalankan manual dari lokal (bukan bagian dari build Vercel):
+
+```bash
+npx prisma migrate deploy   # pakai DATABASE_URL_UNPOOLED di .env (koneksi langsung, bukan pooler)
+npm run db:seed
+```
 
 ## Database
 
-- Provider: SQLite, file `dev.db` di root project (lihat `DATABASE_URL` di `.env`).
+- Provider: **PostgreSQL** (Neon). Dua connection string dipakai untuk peran berbeda:
+  - `DATABASE_URL` — pooled (lewat PgBouncer, host `...-pooler...`), dipakai aplikasi saat runtime.
+  - `DATABASE_URL_UNPOOLED` — koneksi langsung, dipakai CLI Prisma (`migrate`/`studio`) supaya
+    aman untuk DDL & advisory lock (lihat [`prisma.config.ts`](prisma.config.ts)).
 - Schema: [`prisma/schema.prisma`](prisma/schema.prisma).
 - Prisma Client di-generate ke `src/generated/prisma` (jangan di-edit manual, jangan di-commit).
-- Prisma 7 memerlukan driver adapter untuk runtime aplikasi — lihat [`src/lib/prisma.ts`](src/lib/prisma.ts) (`@prisma/adapter-better-sqlite3`).
+- Prisma 7 memerlukan driver adapter untuk runtime aplikasi — lihat [`src/lib/prisma.ts`](src/lib/prisma.ts) (`@prisma/adapter-pg`).
+- Riwayat migrasi SQLite (sebelum pindah ke Postgres) sengaja direset — migrasi lama dialek
+  SQLite tidak kompatibel dengan Postgres, jadi `prisma/migrations/` dimulai ulang dari `init`.
 
 Perintah umum:
 
 ```bash
-npx prisma migrate dev --name <nama_migrasi>   # buat & terapkan migrasi baru
+npx prisma migrate dev --name <nama_migrasi>   # buat & terapkan migrasi baru (lokal, dev)
 npx prisma studio                              # GUI untuk lihat/edit data
 npm run db:seed                                # jalankan prisma/seed.ts
 ```
