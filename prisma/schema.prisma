@@ -1,0 +1,114 @@
+// Prisma schema — Dashboard Tracker RnD Produk Batik
+// Alur: RnD -> (PPIC & Warehouse paralel) -> Marketing
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Divisi {
+  RND
+  PPIC
+  WAREHOUSE
+  MARKETING
+  ADMIN
+  VISITOR
+}
+
+// Daftar awal vendor, disimpan sebagai String bebas di Produk.vendor
+// (bisa ditambah tanpa migrasi): Trading 1500, Trading DigiPrint, Harjono 1.5,
+// Harjono 115, Bima Kunting, Mbak Dwi, Mas Della, Rudy
+
+// Kategori & status (RnD/PPIC/Warehouse/Marketing) dulunya enum di sini,
+// sekarang jadi baris DropdownOption yang bisa diedit lewat /admin/opsi.
+// Produk.kategori/statusX menyimpan DropdownOption.nilai sebagai String biasa.
+model DropdownOption {
+  id        String   @id @default(cuid())
+  grup      String
+  nilai     String
+  label     String
+  urutan    Int
+  aktif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([grup, nilai])
+  @@map("dropdown_option")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  nama         String
+  email        String   @unique
+  passwordHash String
+  divisi       Divisi
+  aktif        Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  riwayatStatus RiwayatStatus[]
+
+  @@map("users")
+}
+
+model Produk {
+  id               String   @id @default(cuid())
+  kodeProduk       String   @unique
+  driveFolderLink  String?
+  driveFolderId    String?
+
+  // --- RnD ---
+  kategori         String?
+  vendor           String?
+  uspWarna         String?
+  tanggalMulai     DateTime?
+  planLaunching    DateTime?
+  desainLink       String?
+  polaKemejaLink   String?
+  statusRnd        String @default("ACC_DESAIN")
+
+  // --- PPIC ---
+  statusPpic          String @default("BELUM_MULAI")
+  tanggalMasukVendor  DateTime?
+  estimasiJadi        DateTime?
+  kendalaPpic         String?
+
+  // --- Warehouse ---
+  statusWarehouse  String @default("BELUM_MULAI")
+  sku              String?
+  stok             Int?
+  kendalaWarehouse String?
+
+  // --- Marketing ---
+  statusMarketing  String @default("BELUM_MULAI")
+  namaMotif        String?
+  filosofiMotif    String?
+  linkMarketplace  String?
+  kendalaMarketing String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  riwayatStatus RiwayatStatus[]
+
+  @@map("produk")
+}
+
+model RiwayatStatus {
+  id           String   @id @default(cuid())
+  produkId     String
+  produk       Produk   @relation(fields: [produkId], references: [id], onDelete: Cascade)
+  divisi       Divisi
+  statusDari   String?
+  statusKe     String
+  diubahOlehId String?
+  diubahOleh   User?    @relation(fields: [diubahOlehId], references: [id])
+  catatan      String?
+  timestamp    DateTime @default(now())
+
+  @@map("riwayat_status")
+}
