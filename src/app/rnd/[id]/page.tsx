@@ -6,6 +6,7 @@ import { ProdukEditForm } from "@/components/ProdukEditForm";
 import { RiwayatTimeline } from "@/components/RiwayatTimeline";
 import { NoAccessNotice } from "@/components/NoAccessNotice";
 import { DesainPreviewSection } from "@/components/DesainPreviewSection";
+import { DeleteProdukButton } from "@/components/DeleteProdukButton";
 import { getDropdownLabelMap, getDropdownOptions, buildTransitions } from "@/lib/status";
 import { updateStatusRnd } from "@/app/rnd/actions";
 import { getSession, canManage } from "@/lib/auth";
@@ -35,9 +36,14 @@ export default async function ProdukDetailPage({
 
   return (
     <main className="mx-auto max-w-3xl px-8 py-12">
-      <div className="flex items-center gap-3">
-        <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">{produk.kodeProduk}</h1>
-        <StatusBadge label={STATUS_RND_LABEL[produk.statusRnd]} status={produk.statusRnd} />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">{produk.kodeProduk}</h1>
+          <StatusBadge label={STATUS_RND_LABEL[produk.statusRnd]} status={produk.statusRnd} />
+        </div>
+        {session?.divisi === Divisi.ADMIN && (
+          <DeleteProdukButton produkId={produk.id} kodeProduk={produk.kodeProduk} />
+        )}
       </div>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
         {produk.kategori ? KATEGORI_LABEL[produk.kategori] : "Tanpa kategori"} · {produk.vendor ?? "Tanpa vendor"}

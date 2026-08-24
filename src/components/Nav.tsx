@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { DIVISI_LABEL } from "@/lib/status";
+import { getSiteSettings } from "@/lib/settings";
 import { LogoutButton } from "@/components/LogoutButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const links = [
   { href: "/", label: "Overview" },
@@ -13,22 +15,31 @@ const links = [
 ];
 
 export async function Nav() {
-  const session = await getSession();
+  const [session, siteSettings] = await Promise.all([getSession(), getSiteSettings()]);
 
   return (
     <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-8 py-3.5">
         <div className="flex items-center gap-7">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="6" height="6" rx="1.2" />
-                <rect x="11" y="3" width="6" height="6" rx="1.2" />
-                <rect x="3" y="11" width="6" height="6" rx="1.2" />
-                <rect x="11" y="11" width="6" height="6" rx="1.2" />
-              </svg>
-            </div>
-            <span className="font-semibold text-zinc-900 dark:text-zinc-50">Batik RnD Tracker</span>
+            {siteSettings.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={siteSettings.logoUrl}
+                alt={siteSettings.namaSitus}
+                className="h-8 w-8 rounded-lg border border-zinc-200 bg-white object-contain dark:border-zinc-800"
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="6" height="6" rx="1.2" />
+                  <rect x="11" y="3" width="6" height="6" rx="1.2" />
+                  <rect x="3" y="11" width="6" height="6" rx="1.2" />
+                  <rect x="11" y="11" width="6" height="6" rx="1.2" />
+                </svg>
+              </div>
+            )}
+            <span className="font-semibold text-zinc-900 dark:text-zinc-50">{siteSettings.namaSitus}</span>
           </div>
           {session && (
             <nav className="flex items-center gap-1 text-sm">
@@ -56,12 +67,18 @@ export async function Nav() {
                   >
                     Akun
                   </Link>
+                  <Link
+                    href="/admin/pengaturan"
+                    className="rounded-md px-3 py-2 font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                  >
+                    Pengaturan
+                  </Link>
                 </>
               )}
             </nav>
           )}
         </div>
-        {session && (
+        {session ? (
           <div className="flex items-center gap-3 text-sm">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-[11px] font-bold text-white">
@@ -72,8 +89,11 @@ export async function Nav() {
                 <span className="text-xs text-zinc-500 dark:text-zinc-400">{DIVISI_LABEL[session.divisi]}</span>
               </div>
             </div>
+            <ThemeToggle />
             <LogoutButton />
           </div>
+        ) : (
+          <ThemeToggle />
         )}
       </div>
     </header>

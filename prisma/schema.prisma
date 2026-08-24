@@ -26,6 +26,17 @@ enum Divisi {
 // Kategori & status (RnD/PPIC/Warehouse/Marketing) dulunya enum di sini,
 // sekarang jadi baris DropdownOption yang bisa diedit lewat /admin/opsi.
 // Produk.kategori/statusX menyimpan DropdownOption.nilai sebagai String biasa.
+// Baris tunggal (id selalu "singleton") untuk pengaturan tampilan global:
+// nama situs & logo, bisa diedit lewat /admin/pengaturan tanpa perlu update kode.
+model SiteSettings {
+  id        String   @id @default("singleton")
+  namaSitus String   @default("Batik RnD Tracker")
+  logoUrl   String?
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
 model DropdownOption {
   id        String   @id @default(cuid())
   grup      String
