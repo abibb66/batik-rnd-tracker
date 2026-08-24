@@ -16,7 +16,7 @@ export default async function RndPage() {
         <div>
           <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard RnD</h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Produk yang sudah ACC Desain dan sedang berjalan di RnD.
+            Produk yang sedang berjalan di RnD.
           </p>
         </div>
         <Link href="/rnd/baru" className="btn-primary">

@@ -14,7 +14,7 @@ export default async function WarehousePage() {
     <main className="mx-auto max-w-5xl px-8 py-12">
       <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard Warehouse</h1>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Produk yang sudah PO Kain di RnD — Warehouse berjalan independen dari PPIC.
+        .
       </p>
 
       <div className="card mt-6 overflow-x-auto">

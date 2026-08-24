@@ -137,9 +137,6 @@ export default async function Home({
           <h1 className="text-[26px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
             Dashboard Produk
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-zinc-500 dark:text-zinc-400">
-            Posisi semua produk lintas divisi: RnD → PPIC & Warehouse (paralel) → Marketing.
-          </p>
         </div>
         <Link href="/rnd/baru" className="btn-primary">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

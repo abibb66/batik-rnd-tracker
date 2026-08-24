@@ -31,7 +31,7 @@ export default async function StatistikPage() {
     <main className="mx-auto max-w-4xl px-8 py-12">
       <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">Statistik Produk</h1>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Ringkasan jumlah produk per kategori, dan produk dengan USP/warna yang sama.
+        Ringkasan produk.
       </p>
 
       <section className="mt-8">

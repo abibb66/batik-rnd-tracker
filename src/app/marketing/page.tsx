@@ -17,10 +17,6 @@ export default async function MarketingPage() {
   return (
     <main className="mx-auto max-w-5xl px-8 py-12">
       <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard Marketing</h1>
-      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-        Produk yang PPIC-nya sudah Ready Kain — bisa mulai isi nama motif, filosofi, dan link marketplace sambil
-        menunggu Warehouse selesai.
-      </p>
 
       <div className="card mt-6 overflow-x-auto">
         <table className="w-full text-left text-sm">
