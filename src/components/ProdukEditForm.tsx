@@ -2,7 +2,6 @@
 
 import { useActionState } from "react";
 import { updateProdukDetail, type UpdateDetailState } from "@/app/rnd/actions";
-import { VENDOR_LIST } from "@/lib/vendor";
 import type { Produk } from "@/generated/prisma/client";
 
 const initialState: UpdateDetailState = {};
@@ -15,15 +14,20 @@ function toInputDate(d: Date | null) {
 export function ProdukEditForm({
   produk,
   kategoriLabelMap,
+  vendorList,
+  redirectTo,
 }: {
   produk: Produk;
   kategoriLabelMap: Record<string, string>;
+  vendorList: string[];
+  redirectTo?: string;
 }) {
   const [state, formAction, pending] = useActionState(updateProdukDetail, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="produkId" value={produk.id} />
+      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
       {state.error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           {state.error}
@@ -49,7 +53,7 @@ export function ProdukEditForm({
           <span className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Vendor</span>
           <input name="vendor" required list="vendor-list" defaultValue={produk.vendor ?? ""} className="input" />
           <datalist id="vendor-list">
-            {VENDOR_LIST.map((v) => (
+            {vendorList.map((v) => (
               <option key={v} value={v} />
             ))}
           </datalist>
@@ -90,6 +94,28 @@ export function ProdukEditForm({
             Link Folder Google Drive
           </span>
           <input type="url" name="driveFolderLink" defaultValue={produk.driveFolderLink ?? ""} className="input" />
+        </label>
+
+        <label className="block">
+          <span className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Estimasi Strike Off Jadi
+          </span>
+          <input
+            type="date"
+            name="estimasiStrikeOffJadi"
+            defaultValue={toInputDate(produk.estimasiStrikeOffJadi)}
+            className="input"
+          />
+        </label>
+
+        <label className="flex items-center gap-2 pt-6">
+          <input
+            type="checkbox"
+            name="strikeOffDicetak"
+            defaultChecked={produk.strikeOffDicetak}
+            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
+          />
+          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Sudah Cetak Paper Sketch</span>
         </label>
       </div>
 

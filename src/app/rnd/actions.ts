@@ -14,6 +14,12 @@ function toDateOrNull(value: FormDataEntryValue | null) {
   return new Date(value);
 }
 
+function addDays(date: Date, days: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
 function toStringOrNull(value: FormDataEntryValue | null) {
   if (!value || typeof value !== "string" || value.trim() === "") return null;
   return value.trim();
@@ -140,6 +146,21 @@ export async function updateStatusRnd(
 
   if (statusKe === "PO_KAIN") {
     await notifyPoKain(produk);
+
+    if (!produk.estimasiJadi || !produk.planLaunching) {
+      const vendor = produk.vendor ? await prisma.vendor.findUnique({ where: { nama: produk.vendor } }) : null;
+      const leadTimeHari = vendor?.leadTimeHari ?? 14;
+      const estimasiReadyStok = produk.estimasiJadi ?? addDays(new Date(), leadTimeHari);
+      const planLaunchingBaru = produk.planLaunching ?? addDays(estimasiReadyStok, 7);
+
+      await prisma.produk.update({
+        where: { id: produkId },
+        data: {
+          estimasiJadi: produk.estimasiJadi ?? estimasiReadyStok,
+          planLaunching: produk.planLaunching ?? planLaunchingBaru,
+        },
+      });
+    }
   }
 
   revalidatePath("/rnd");
@@ -159,6 +180,9 @@ const updateDetailSchema = z.object({
   desainLink: z.string().trim().optional(),
   polaKemejaLink: z.string().trim().optional(),
   driveFolderLink: z.string().trim().optional(),
+  estimasiStrikeOffJadi: z.string().optional(),
+  strikeOffDicetak: z.string().optional(),
+  redirectTo: z.string().optional(),
 });
 
 export type UpdateDetailState = { error?: string };
@@ -193,10 +217,13 @@ export async function updateProdukDetail(
       desainLink: toStringOrNull(data.desainLink ?? null),
       polaKemejaLink: toStringOrNull(data.polaKemejaLink ?? null),
       driveFolderLink: toStringOrNull(data.driveFolderLink ?? null),
+      estimasiStrikeOffJadi: toDateOrNull(data.estimasiStrikeOffJadi ?? null),
+      strikeOffDicetak: data.strikeOffDicetak === "on",
     },
   });
 
   revalidatePath("/rnd");
   revalidatePath(`/rnd/${data.produkId}`);
-  return {};
+  revalidatePath("/");
+  redirect(data.redirectTo && data.redirectTo.startsWith("/") ? data.redirectTo : "/");
 }

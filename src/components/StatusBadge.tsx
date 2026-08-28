@@ -1,4 +1,4 @@
-import { statusBadgeClass } from "@/lib/status";
+import { statusBadgeClass } from "@/lib/statusBadge";
 
 export function StatusBadge({ label, status }: { label: string; status: string }) {
   return (

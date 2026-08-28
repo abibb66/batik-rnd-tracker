@@ -2,11 +2,16 @@
 
 import { useActionState } from "react";
 import { createProduk, type CreateProdukState } from "@/app/rnd/actions";
-import { VENDOR_LIST } from "@/lib/vendor";
 
 const initialState: CreateProdukState = {};
 
-export function ProdukForm({ kategoriLabelMap }: { kategoriLabelMap: Record<string, string> }) {
+export function ProdukForm({
+  kategoriLabelMap,
+  vendorList,
+}: {
+  kategoriLabelMap: Record<string, string>;
+  vendorList: string[];
+}) {
   const [state, formAction, pending] = useActionState(createProduk, initialState);
 
   return (
@@ -43,7 +48,7 @@ export function ProdukForm({ kategoriLabelMap }: { kategoriLabelMap: Record<stri
         <Field label="Vendor" error={state.fieldErrors?.vendor}>
           <input name="vendor" required list="vendor-list" placeholder="Pilih atau ketik vendor" className="input" />
           <datalist id="vendor-list">
-            {VENDOR_LIST.map((v) => (
+            {vendorList.map((v) => (
               <option key={v} value={v} />
             ))}
           </datalist>

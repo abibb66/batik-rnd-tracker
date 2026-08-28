@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Divisi } from "@/generated/prisma/client";
@@ -48,7 +49,15 @@ export async function updateStatusMarketing(
   }
 
   await prisma.$transaction([
-    prisma.produk.update({ where: { id: produkId }, data: { statusMarketing: statusKe } }),
+    prisma.produk.update({
+      where: { id: produkId },
+      data: {
+        statusMarketing: statusKe,
+        // Sinkron Plan Launching dengan tanggal Launch sesungguhnya, bukan
+        // cuma rencana awal, begitu status benar-benar mencapai Launch.
+        ...(statusKe === "LAUNCH" ? { planLaunching: new Date() } : {}),
+      },
+    }),
     prisma.riwayatStatus.create({
       data: {
         produkId,
@@ -76,6 +85,7 @@ const updateDetailSchema = z.object({
   filosofiMotif: z.string().trim().optional(),
   linkMarketplace: z.string().trim().optional(),
   kendalaMarketing: z.string().trim().optional(),
+  redirectTo: z.string().optional(),
 });
 
 export type UpdateDetailState = { error?: string };
@@ -105,5 +115,6 @@ export async function updateProdukDetailMarketing(
 
   revalidatePath("/marketing");
   revalidatePath(`/marketing/${data.produkId}`);
-  return {};
+  revalidatePath("/");
+  redirect(data.redirectTo && data.redirectTo.startsWith("/") ? data.redirectTo : "/");
 }

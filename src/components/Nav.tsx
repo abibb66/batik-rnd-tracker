@@ -12,6 +12,7 @@ const links = [
   { href: "/warehouse", label: "Warehouse" },
   { href: "/marketing", label: "Marketing" },
   { href: "/statistik", label: "Statistik" },
+  { href: "/kalender", label: "Kalender" },
 ];
 
 export async function Nav() {
@@ -66,6 +67,12 @@ export async function Nav() {
                     className="rounded-md px-3 py-2 font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
                   >
                     Akun
+                  </Link>
+                  <Link
+                    href="/admin/vendor"
+                    className="rounded-md px-3 py-2 font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                  >
+                    Vendor
                   </Link>
                   <Link
                     href="/admin/pengaturan"

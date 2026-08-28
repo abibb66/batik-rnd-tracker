@@ -1,24 +1,36 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { StatusBadge } from "@/components/StatusBadge";
-import { getDropdownLabelMap } from "@/lib/status";
+import { RndRow } from "@/components/RndRow";
+import { getDropdownLabelMap, getDropdownOptions, buildTransitions } from "@/lib/status";
+import { getSession, canManage } from "@/lib/auth";
+import { Divisi } from "@/generated/prisma/client";
 
 export default async function RndPage() {
-  const [produkList, KATEGORI_LABEL, STATUS_RND_LABEL] = await Promise.all([
-    prisma.produk.findMany({ orderBy: { createdAt: "desc" } }),
+  const [produkList, KATEGORI_LABEL, STATUS_RND_LABEL, statusRndOptions, vendors, session] = await Promise.all([
+    prisma.produk.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { riwayatStatus: { orderBy: { timestamp: "desc" }, include: { diubahOleh: true } } },
+    }),
     getDropdownLabelMap("KATEGORI"),
     getDropdownLabelMap("STATUS_RND"),
+    getDropdownOptions("STATUS_RND"),
+    prisma.vendor.findMany({ where: { aktif: true }, orderBy: { nama: "asc" } }),
+    getSession(),
   ]);
+  const vendorList = vendors.map((v) => v.nama);
+  const canEdit = canManage(session, Divisi.RND);
+  const isAdmin = session?.divisi === Divisi.ADMIN;
 
   return (
     <main className="mx-auto max-w-5xl px-8 py-12">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard RnD</h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Produk yang sedang berjalan di RnD.
-          </p>
-        </div>
+      <div className="text-center">
+        <h1 className="text-[22px] font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">Dashboard RnD</h1>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          Produk yang sedang berjalan di RnD.
+          {canEdit && " Klik \"Ubah\" untuk edit langsung dari sini."}
+        </p>
+      </div>
+      <div className="mt-4 flex justify-end">
         <Link href="/rnd/baru" className="btn-primary">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M10 4v12M4 10h12" />
@@ -31,42 +43,39 @@ export default async function RndPage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-indigo-50/60 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:bg-indigo-950/30 dark:text-zinc-400">
             <tr>
+              <th className="px-4 py-3"></th>
               <th className="px-4 py-3">Kode Produk</th>
               <th className="px-4 py-3">Kategori</th>
               <th className="px-4 py-3">Vendor</th>
+              <th className="px-4 py-3">USP / Warna</th>
+              <th className="px-4 py-3">Tanggal Mulai</th>
               <th className="px-4 py-3">Plan Launching</th>
+              <th className="px-4 py-3">Estimasi Strike Off Jadi</th>
+              <th className="px-4 py-3">Cetak Paper Sketch</th>
+              <th className="px-4 py-3">Link Desain</th>
+              <th className="px-4 py-3">Link Pola Kemeja</th>
+              <th className="px-4 py-3">Link Folder Drive</th>
               <th className="px-4 py-3">Status RnD</th>
+              <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {produkList.map((p) => (
-              <tr
+              <RndRow
                 key={p.id}
-                className="border-t border-zinc-100 transition-colors hover:bg-indigo-50/40 dark:border-zinc-800 dark:hover:bg-indigo-950/20"
-              >
-                <td className="px-4 py-3 font-semibold">
-                  <Link
-                    href={`/rnd/${p.id}`}
-                    className="text-zinc-900 hover:text-indigo-600 dark:text-zinc-50 dark:hover:text-indigo-400"
-                  >
-                    {p.kodeProduk}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                  {p.kategori ? KATEGORI_LABEL[p.kategori] : "-"}
-                </td>
-                <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{p.vendor ?? "-"}</td>
-                <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-                  {p.planLaunching ? p.planLaunching.toLocaleDateString("id-ID") : "-"}
-                </td>
-                <td className="px-4 py-3">
-                  <StatusBadge label={STATUS_RND_LABEL[p.statusRnd]} status={p.statusRnd} />
-                </td>
-              </tr>
+                produk={p}
+                riwayat={p.riwayatStatus}
+                kategoriLabelMap={KATEGORI_LABEL}
+                statusLabelMap={STATUS_RND_LABEL}
+                transitions={buildTransitions(statusRndOptions, p.statusRnd)}
+                vendorList={vendorList}
+                canEdit={canEdit}
+                isAdmin={isAdmin}
+              />
             ))}
             {produkList.length === 0 && (
               <tr>
-                <td className="px-4 py-8 text-center text-zinc-500" colSpan={5}>
+                <td className="px-4 py-8 text-center text-zinc-500" colSpan={14}>
                   Belum ada produk.{" "}
                   <Link href="/rnd/baru" className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
                     Tambah produk baru

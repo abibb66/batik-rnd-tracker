@@ -43,6 +43,19 @@ const DROPDOWN_OPTIONS: { grup: string; nilai: string; label: string; urutan: nu
   { grup: "STATUS_MARKETING", nilai: "LAUNCH", label: "Launch", urutan: 3 },
 ];
 
+// Vendor awal, sekarang baris di DB (bukan array statis lagi) supaya tiap
+// vendor bisa punya lead time sendiri, diatur lewat /admin/vendor.
+const VENDOR_NAMES = [
+  "Trading 1500",
+  "Trading DigiPrint",
+  "Harjono 1.5",
+  "Harjono 115",
+  "Bima Kunting",
+  "Mbak Dwi",
+  "Mas Della",
+  "Rudy",
+];
+
 async function main() {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
 
@@ -54,6 +67,10 @@ async function main() {
         create: o,
       })
     )
+  );
+
+  await Promise.all(
+    VENDOR_NAMES.map((nama) => prisma.vendor.upsert({ where: { nama }, update: {}, create: { nama } }))
   );
 
   const users = await Promise.all(

@@ -6,12 +6,13 @@ import type { Produk } from "@/generated/prisma/client";
 
 const initialState: UpdateDetailState = {};
 
-export function ProdukEditFormMarketing({ produk }: { produk: Produk }) {
+export function ProdukEditFormMarketing({ produk, redirectTo }: { produk: Produk; redirectTo?: string }) {
   const [state, formAction, pending] = useActionState(updateProdukDetailMarketing, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="produkId" value={produk.id} />
+      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
       {state.error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           {state.error}

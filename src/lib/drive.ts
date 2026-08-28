@@ -16,3 +16,8 @@ export function extractDriveFileId(url: string): string | null {
 export function drivePreviewUrl(fileId: string) {
   return `https://drive.google.com/file/d/${fileId}/preview`;
 }
+
+// Thumbnail ringan (gambar biasa, bukan iframe) — cocok dipakai berulang di baris tabel.
+export function driveThumbnailUrl(fileId: string, lebar = 100) {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${lebar}`;
+}

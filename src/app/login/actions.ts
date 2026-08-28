@@ -5,7 +5,7 @@ import { z } from "zod";
 import { authenticate, setSessionCookie, clearSessionCookie } from "@/lib/auth";
 
 const loginSchema = z.object({
-  email: z.string().trim().min(1, "Email wajib diisi"),
+  email: z.string().trim().toLowerCase().min(1, "Email wajib diisi"),
   password: z.string().min(1, "Password wajib diisi"),
   next: z.string().trim().optional(),
 });

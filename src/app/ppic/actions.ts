@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Divisi } from "@/generated/prisma/client";
@@ -78,6 +79,7 @@ const updateDetailSchema = z.object({
   tanggalMasukVendor: z.string().optional(),
   estimasiJadi: z.string().optional(),
   kendalaPpic: z.string().trim().optional(),
+  redirectTo: z.string().optional(),
 });
 
 export type UpdateDetailState = { error?: string };
@@ -106,5 +108,6 @@ export async function updateProdukDetailPpic(
 
   revalidatePath("/ppic");
   revalidatePath(`/ppic/${data.produkId}`);
-  return {};
+  revalidatePath("/");
+  redirect(data.redirectTo && data.redirectTo.startsWith("/") ? data.redirectTo : "/");
 }

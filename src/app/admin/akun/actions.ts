@@ -20,7 +20,7 @@ const divisiSchema = z.enum(["RND", "PPIC", "WAREHOUSE", "MARKETING", "ADMIN", "
 
 const createSchema = z.object({
   nama: z.string().trim().min(1, "Nama wajib diisi"),
-  email: z.string().trim().email("Email tidak valid"),
+  email: z.string().trim().toLowerCase().email("Email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter"),
   divisi: divisiSchema,
 });

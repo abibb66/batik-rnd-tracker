@@ -37,6 +37,22 @@ model SiteSettings {
   @@map("site_settings")
 }
 
+// Vendor dulunya cuma daftar String bebas (VENDOR_LIST), sekarang jadi baris
+// biar tiap vendor punya lead time sendiri (dipakai buat auto-hitung Estimasi
+// Ready Stok & Plan Launching begitu status RnD jadi PO Kain). Produk.vendor
+// tetap String bebas (dicocokkan ke Vendor.nama), bukan foreign key, biar
+// vendor lama yang belum terdaftar di sini tidak error.
+model Vendor {
+  id           String   @id @default(cuid())
+  nama         String   @unique
+  leadTimeHari Int      @default(14)
+  aktif        Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("vendor")
+}
+
 model DropdownOption {
   id        String   @id @default(cuid())
   grup      String
@@ -73,14 +89,16 @@ model Produk {
   driveFolderId    String?
 
   // --- RnD ---
-  kategori         String?
-  vendor           String?
-  uspWarna         String?
-  tanggalMulai     DateTime?
-  planLaunching    DateTime?
-  desainLink       String?
-  polaKemejaLink   String?
-  statusRnd        String @default("ACC_DESAIN")
+  kategori              String?
+  vendor                String?
+  uspWarna              String?
+  tanggalMulai          DateTime?
+  planLaunching         DateTime?
+  desainLink            String?
+  polaKemejaLink        String?
+  statusRnd             String   @default("ACC_DESAIN")
+  strikeOffDicetak      Boolean  @default(false)
+  estimasiStrikeOffJadi DateTime?
 
   // --- PPIC ---
   statusPpic          String @default("BELUM_MULAI")
@@ -91,8 +109,8 @@ model Produk {
   // --- Warehouse ---
   statusWarehouse  String @default("BELUM_MULAI")
   sku              String?
-  stok             Int?
   kendalaWarehouse String?
+  stokUkuran       StokUkuran[]
 
   // --- Marketing ---
   statusMarketing  String @default("BELUM_MULAI")
@@ -107,6 +125,23 @@ model Produk {
   riwayatStatus RiwayatStatus[]
 
   @@map("produk")
+}
+
+// Stok Warehouse dulunya satu angka (Produk.stok), sekarang dipecah per ukuran
+// supaya Warehouse bisa catat S/M/L/XL/XXL terpisah, dan bisa tambah ukuran
+// custom lain (mis. "All Size", "3XL") tanpa perlu migrasi baru.
+model StokUkuran {
+  id        String   @id @default(cuid())
+  produkId  String
+  produk    Produk   @relation(fields: [produkId], references: [id], onDelete: Cascade)
+  ukuran    String
+  jumlah    Int      @default(0)
+  urutan    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([produkId, ukuran])
+  @@map("stok_ukuran")
 }
 
 model RiwayatStatus {

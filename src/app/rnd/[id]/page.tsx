@@ -19,7 +19,7 @@ export default async function ProdukDetailPage({
 }) {
   const { id } = await params;
 
-  const [produk, session, KATEGORI_LABEL, STATUS_RND_LABEL, statusRndOptions] = await Promise.all([
+  const [produk, session, KATEGORI_LABEL, STATUS_RND_LABEL, statusRndOptions, vendors] = await Promise.all([
     prisma.produk.findUnique({
       where: { id },
       include: { riwayatStatus: { orderBy: { timestamp: "desc" }, include: { diubahOleh: true } } },
@@ -28,7 +28,9 @@ export default async function ProdukDetailPage({
     getDropdownLabelMap("KATEGORI"),
     getDropdownLabelMap("STATUS_RND"),
     getDropdownOptions("STATUS_RND"),
+    prisma.vendor.findMany({ where: { aktif: true }, orderBy: { nama: "asc" } }),
   ]);
+  const vendorList = vendors.map((v) => v.nama);
 
   if (!produk) notFound();
   const canEdit = canManage(session, Divisi.RND);
@@ -63,7 +65,7 @@ export default async function ProdukDetailPage({
               statusLabel={STATUS_RND_LABEL}
               transitions={transitions}
               action={updateStatusRnd}
-              finalMessage={`Tidak ada status aktif lain untuk dipilih di RnD.`}
+              finalMessage="Tidak ada status aktif lain untuk dipilih di RnD."
             />
           ) : (
             <NoAccessNotice divisi={Divisi.RND} />
@@ -77,7 +79,7 @@ export default async function ProdukDetailPage({
         </h2>
         <div className="mt-3">
           {canEdit ? (
-            <ProdukEditForm produk={produk} kategoriLabelMap={KATEGORI_LABEL} />
+            <ProdukEditForm produk={produk} kategoriLabelMap={KATEGORI_LABEL} vendorList={vendorList} />
           ) : (
             <NoAccessNotice divisi={Divisi.RND} />
           )}

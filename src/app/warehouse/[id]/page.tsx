@@ -3,12 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatusTransitionForm } from "@/components/StatusTransitionForm";
 import { ProdukEditFormWarehouse } from "@/components/ProdukEditFormWarehouse";
+import { StokUkuranEditor } from "@/components/StokUkuranEditor";
 import { RiwayatTimeline } from "@/components/RiwayatTimeline";
 import { RndContextCard } from "@/components/RndContextCard";
 import { NoAccessNotice } from "@/components/NoAccessNotice";
 import { DesainPreviewSection } from "@/components/DesainPreviewSection";
 import { getDropdownLabelMap, getDropdownOptions, buildTransitions } from "@/lib/status";
-import { updateStatusWarehouse } from "@/app/warehouse/actions";
+import { updateStatusWarehouse, ensureDefaultUkuran } from "@/app/warehouse/actions";
 import { getSession, canManage } from "@/lib/auth";
 import { Divisi } from "@/generated/prisma/client";
 
@@ -19,10 +20,10 @@ export default async function WarehouseDetailPage({
 }) {
   const { id } = await params;
 
-  const [produk, session, kategoriLabelMap, STATUS_WAREHOUSE_LABEL, statusWarehouseOptions] = await Promise.all([
+  const [produkAwal, session, kategoriLabelMap, STATUS_WAREHOUSE_LABEL, statusWarehouseOptions] = await Promise.all([
     prisma.produk.findUnique({
       where: { id },
-      include: { riwayatStatus: { orderBy: { timestamp: "desc" }, include: { diubahOleh: true } } },
+      include: { riwayatStatus: { orderBy: { timestamp: "desc" }, include: { diubahOleh: true } }, stokUkuran: true },
     }),
     getSession(),
     getDropdownLabelMap("KATEGORI"),
@@ -30,6 +31,16 @@ export default async function WarehouseDetailPage({
     getDropdownOptions("STATUS_WAREHOUSE"),
   ]);
 
+  if (!produkAwal) notFound();
+  if (produkAwal.stokUkuran.length === 0) {
+    await ensureDefaultUkuran(produkAwal.id);
+  }
+  const produk = produkAwal.stokUkuran.length === 0
+    ? await prisma.produk.findUnique({
+        where: { id },
+        include: { riwayatStatus: { orderBy: { timestamp: "desc" }, include: { diubahOleh: true } }, stokUkuran: true },
+      })
+    : produkAwal;
   if (!produk) notFound();
   if (produk.statusRnd !== "PO_KAIN") {
     return (
@@ -82,6 +93,19 @@ export default async function WarehouseDetailPage({
         </h2>
         <div className="mt-3">
           {canEdit ? <ProdukEditFormWarehouse produk={produk} /> : <NoAccessNotice divisi={Divisi.WAREHOUSE} />}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Stok per Ukuran
+        </h2>
+        <div className="mt-3 max-w-md">
+          {canEdit ? (
+            <StokUkuranEditor produkId={produk.id} stokUkuran={produk.stokUkuran} />
+          ) : (
+            <NoAccessNotice divisi={Divisi.WAREHOUSE} />
+          )}
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Divisi } from "@/generated/prisma/client";
@@ -74,8 +75,8 @@ export async function updateStatusWarehouse(
 const updateDetailSchema = z.object({
   produkId: z.string().min(1),
   sku: z.string().trim().optional(),
-  stok: z.string().trim().optional(),
   kendalaWarehouse: z.string().trim().optional(),
+  redirectTo: z.string().optional(),
 });
 
 export type UpdateDetailState = { error?: string };
@@ -93,21 +94,85 @@ export async function updateProdukDetailWarehouse(
   if (!parsed.success) return { error: "Periksa kembali isian form." };
   const data = parsed.data;
 
-  const stokValue = data.stok && data.stok.trim() !== "" ? Number(data.stok) : null;
-  if (data.stok && data.stok.trim() !== "" && (stokValue === null || Number.isNaN(stokValue))) {
-    return { error: "Stok harus berupa angka." };
-  }
-
   await prisma.produk.update({
     where: { id: data.produkId },
     data: {
       sku: toStringOrNull(data.sku ?? null),
-      stok: stokValue,
       kendalaWarehouse: toStringOrNull(data.kendalaWarehouse ?? null),
     },
   });
 
   revalidatePath("/warehouse");
   revalidatePath(`/warehouse/${data.produkId}`);
+  revalidatePath("/");
+  redirect(data.redirectTo && data.redirectTo.startsWith("/") ? data.redirectTo : "/");
+}
+
+const DEFAULT_UKURAN = ["S", "M", "L", "XL", "XXL"];
+
+// Dipanggil saat halaman Warehouse dimuat — produk baru otomatis dapat baris
+// S/M/L/XL/XXL kosong, tanpa perlu Warehouse bikin manual satu-satu.
+export async function ensureDefaultUkuran(produkId: string) {
+  await prisma.stokUkuran.createMany({
+    data: DEFAULT_UKURAN.map((ukuran, i) => ({ produkId, ukuran, jumlah: 0, urutan: i })),
+    skipDuplicates: true,
+  });
+}
+
+export type StokUkuranState = { error?: string };
+
+const setStokSchema = z.object({
+  produkId: z.string().min(1),
+  ukuran: z.string().trim().min(1, "Nama ukuran wajib diisi"),
+  jumlah: z.coerce.number().int().min(0, "Jumlah minimal 0"),
+});
+
+export async function setStokUkuran(
+  _prevState: StokUkuranState,
+  formData: FormData
+): Promise<StokUkuranState> {
+  const session = await getSession();
+  if (!session || !canManage(session, Divisi.WAREHOUSE)) {
+    return { error: "Hanya PIC Warehouse atau Admin yang bisa mengubah stok." };
+  }
+
+  const parsed = setStokSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Periksa kembali isian." };
+  const { produkId, ukuran, jumlah } = parsed.data;
+
+  const existingCount = await prisma.stokUkuran.count({ where: { produkId } });
+
+  await prisma.stokUkuran.upsert({
+    where: { produkId_ukuran: { produkId, ukuran } },
+    update: { jumlah },
+    create: { produkId, ukuran, jumlah, urutan: existingCount },
+  });
+
+  revalidatePath("/warehouse");
+  revalidatePath(`/warehouse/${produkId}`);
+  return {};
+}
+
+const hapusStokSchema = z.object({
+  produkId: z.string().min(1),
+  ukuran: z.string().trim().min(1),
+});
+
+export async function hapusStokUkuran(
+  _prevState: StokUkuranState,
+  formData: FormData
+): Promise<StokUkuranState> {
+  const session = await getSession();
+  if (!session || !canManage(session, Divisi.WAREHOUSE)) {
+    return { error: "Hanya PIC Warehouse atau Admin yang bisa mengubah stok." };
+  }
+
+  const parsed = hapusStokSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "Data tidak valid." };
+
+  await prisma.stokUkuran.deleteMany({ where: parsed.data });
+
+  revalidatePath("/warehouse");
+  revalidatePath(`/warehouse/${parsed.data.produkId}`);
   return {};
 }
