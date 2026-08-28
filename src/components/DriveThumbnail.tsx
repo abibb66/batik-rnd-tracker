@@ -1,8 +1,8 @@
 import { extractDriveFileId, driveThumbnailUrl } from "@/lib/drive";
 
 const SIZE_CLASS = {
-  sm: "w-14 aspect-[3/5]",
-  lg: "w-28 aspect-[3/5]",
+  sm: "w-20 aspect-[3/5]",
+  lg: "w-36 aspect-[3/5]",
 };
 
 export function DriveThumbnail({
@@ -31,7 +31,7 @@ export function DriveThumbnail({
     <a href={url ?? undefined} target="_blank" rel="noopener noreferrer" className="block shrink-0" title="Buka file di Drive">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={driveThumbnailUrl(fileId, size === "lg" ? 200 : 120)}
+        src={driveThumbnailUrl(fileId, size === "lg" ? 320 : 180)}
         alt={alt}
         className={`rounded-lg border border-zinc-200 object-cover transition-opacity hover:opacity-80 dark:border-zinc-800 ${dimensionClass}`}
       />

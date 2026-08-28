@@ -54,16 +54,16 @@ export default async function WarehousePage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-indigo-50/60 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:bg-indigo-950/30 dark:text-zinc-400">
             <tr>
-              <th className="px-4 py-3"></th>
-              <th className="px-4 py-3">Kode Produk</th>
-              <th className="px-4 py-3">Kategori</th>
-              <th className="px-4 py-3">SKU</th>
-              <th className="px-4 py-3">Total Stok</th>
-              <th className="px-4 py-3">Tanggal Ready Stok</th>
-              <th className="px-4 py-3">Plan Launching</th>
-              <th className="px-4 py-3">Kendala</th>
-              <th className="px-4 py-3">Status Warehouse</th>
-              <th className="px-4 py-3"></th>
+              <th className="px-4 py-2.5 text-center text-[10px]"></th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Kode Produk</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Kategori</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">SKU</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Total Stok</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Tanggal Ready Stok</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Plan Launching</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Kendala</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Status Warehouse</th>
+              <th className="px-4 py-2.5 text-center text-[10px]"></th>
             </tr>
           </thead>
           <tbody>

@@ -43,17 +43,17 @@ export default async function RndPage() {
         <table className="w-full text-left text-sm">
           <thead className="bg-indigo-50/60 text-xs font-semibold tracking-wide text-zinc-500 uppercase dark:bg-indigo-950/30 dark:text-zinc-400">
             <tr>
-              <th className="px-4 py-3"></th>
-              <th className="px-4 py-3">Kode Produk</th>
-              <th className="px-4 py-3">Kategori / Vendor / USP</th>
-              <th className="px-4 py-3">Tanggal Mulai</th>
-              <th className="px-4 py-3">Plan Launching</th>
-              <th className="px-4 py-3">Estimasi Strike Off Jadi</th>
-              <th className="px-4 py-3">Cetak Paper Sketch</th>
-              <th className="px-4 py-3">Link Pola Kemeja</th>
-              <th className="px-4 py-3">Link Folder Drive</th>
-              <th className="px-4 py-3">Status RnD</th>
-              <th className="px-4 py-3"></th>
+              <th className="px-4 py-2.5 text-center text-[10px]"></th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Kode Produk</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Kategori / Vendor / USP</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Tanggal Mulai</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Plan Launching</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Estimasi Strike Off Jadi</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Cetak Paper Sketch</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Link Pola Kemeja</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Link Folder Drive</th>
+              <th className="px-4 py-2.5 text-center text-[10px]">Status RnD</th>
+              <th className="px-4 py-2.5 text-center text-[10px]"></th>
             </tr>
           </thead>
           <tbody>
