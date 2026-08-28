@@ -48,11 +48,13 @@ export function RndRow({
             {produk.kodeProduk}
           </Link>
         </td>
-        <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-          {produk.kategori ? kategoriLabelMap[produk.kategori] : "-"}
+        <td className="px-4 py-3 text-xs text-zinc-600 dark:text-zinc-400">
+          <div className="flex flex-col gap-0.5">
+            <span>{produk.kategori ? kategoriLabelMap[produk.kategori] : "-"}</span>
+            <span>{produk.vendor ?? "-"}</span>
+            <span>{produk.uspWarna ?? "-"}</span>
+          </div>
         </td>
-        <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{produk.vendor ?? "-"}</td>
-        <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{produk.uspWarna ?? "-"}</td>
         <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
           {produk.tanggalMulai ? produk.tanggalMulai.toLocaleDateString("id-ID") : "-"}
         </td>
@@ -72,20 +74,6 @@ export function RndRow({
           >
             {produk.strikeOffDicetak ? "Sudah" : "Belum"}
           </span>
-        </td>
-        <td className="px-4 py-3">
-          {produk.desainLink ? (
-            <a
-              href={produk.desainLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-            >
-              Buka ↗
-            </a>
-          ) : (
-            <span className="text-zinc-400 dark:text-zinc-600">-</span>
-          )}
         </td>
         <td className="px-4 py-3">
           {produk.polaKemejaLink ? (
@@ -128,7 +116,7 @@ export function RndRow({
       </tr>
       {canEdit && editing && (
         <tr className="border-t border-zinc-100 dark:border-zinc-800">
-          <td colSpan={14} className="bg-zinc-50/60 px-4 py-5 dark:bg-zinc-950/40">
+          <td colSpan={11} className="bg-zinc-50/60 px-4 py-5 dark:bg-zinc-950/40">
             <div className="flex items-start gap-4">
               <DriveThumbnail url={produk.desainLink} alt={produk.kodeProduk} size="lg" />
               <div className="flex-1">

@@ -35,12 +35,10 @@ export default async function PpicPage() {
             <tr>
               <th className="px-4 py-3"></th>
               <th className="px-4 py-3">Kode Produk</th>
-              <th className="px-4 py-3">Kategori</th>
-              <th className="px-4 py-3">Vendor</th>
+              <th className="px-4 py-3">Kategori / Vendor</th>
               <th className="px-4 py-3">Estimasi Jadi</th>
               <th className="px-4 py-3">Tanggal Ready Stok</th>
               <th className="px-4 py-3">Plan Launching</th>
-              <th className="px-4 py-3">Link Desain</th>
               <th className="px-4 py-3">Link Pola Kemeja</th>
               <th className="px-4 py-3">Kendala</th>
               <th className="px-4 py-3">Status PPIC</th>
@@ -67,7 +65,7 @@ export default async function PpicPage() {
             })}
             {produkList.length === 0 && (
               <tr>
-                <td className="px-4 py-8 text-center text-zinc-500" colSpan={12}>
+                <td className="px-4 py-8 text-center text-zinc-500" colSpan={10}>
                   Belum ada produk yang PO Kain.
                 </td>
               </tr>

@@ -38,8 +38,7 @@ export default async function MarketingPage() {
               <th className="px-4 py-3">Nama Motif</th>
               <th className="px-4 py-3">Filosofi Motif</th>
               <th className="px-4 py-3">SKU</th>
-              <th className="px-4 py-3">USP / Warna</th>
-              <th className="px-4 py-3">Kategori</th>
+              <th className="px-4 py-3">Kategori / USP</th>
               <th className="px-4 py-3">Tanggal Ready Stok</th>
               <th className="px-4 py-3">Tanggal Ready to Launch</th>
               <th className="px-4 py-3">Plan Launching</th>
@@ -72,7 +71,7 @@ export default async function MarketingPage() {
             })}
             {produkList.length === 0 && (
               <tr>
-                <td className="px-4 py-8 text-center text-zinc-500" colSpan={13}>
+                <td className="px-4 py-8 text-center text-zinc-500" colSpan={12}>
                   Belum ada produk yang Ready Kain di PPIC.
                 </td>
               </tr>

@@ -62,10 +62,12 @@ export function PpicRow({
             {produk.kodeProduk}
           </Link>
         </td>
-        <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
-          {produk.kategori ? kategoriLabelMap[produk.kategori] : "-"}
+        <td className="px-4 py-3 text-xs text-zinc-600 dark:text-zinc-400">
+          <div className="flex flex-col gap-0.5">
+            <span>{produk.kategori ? kategoriLabelMap[produk.kategori] : "-"}</span>
+            <span>{produk.vendor ?? "-"}</span>
+          </div>
         </td>
-        <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{produk.vendor ?? "-"}</td>
         <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
           {produk.estimasiJadi ? produk.estimasiJadi.toLocaleDateString("id-ID") : "-"}
         </td>
@@ -74,9 +76,6 @@ export function PpicRow({
         </td>
         <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
           {produk.planLaunching ? produk.planLaunching.toLocaleDateString("id-ID") : "-"}
-        </td>
-        <td className="px-4 py-3">
-          <LinkCell url={produk.desainLink} />
         </td>
         <td className="px-4 py-3">
           <LinkCell url={produk.polaKemejaLink} />
@@ -97,7 +96,7 @@ export function PpicRow({
       </tr>
       {canEdit && editing && (
         <tr className="border-t border-zinc-100 dark:border-zinc-800">
-          <td colSpan={12} className="bg-zinc-50/60 px-4 py-5 dark:bg-zinc-950/40">
+          <td colSpan={10} className="bg-zinc-50/60 px-4 py-5 dark:bg-zinc-950/40">
             <div className="flex items-start gap-4">
               <DriveThumbnail url={produk.desainLink} alt={produk.kodeProduk} size="lg" />
               <div className="flex-1">

@@ -45,14 +45,11 @@ export default async function RndPage() {
             <tr>
               <th className="px-4 py-3"></th>
               <th className="px-4 py-3">Kode Produk</th>
-              <th className="px-4 py-3">Kategori</th>
-              <th className="px-4 py-3">Vendor</th>
-              <th className="px-4 py-3">USP / Warna</th>
+              <th className="px-4 py-3">Kategori / Vendor / USP</th>
               <th className="px-4 py-3">Tanggal Mulai</th>
               <th className="px-4 py-3">Plan Launching</th>
               <th className="px-4 py-3">Estimasi Strike Off Jadi</th>
               <th className="px-4 py-3">Cetak Paper Sketch</th>
-              <th className="px-4 py-3">Link Desain</th>
               <th className="px-4 py-3">Link Pola Kemeja</th>
               <th className="px-4 py-3">Link Folder Drive</th>
               <th className="px-4 py-3">Status RnD</th>
@@ -75,7 +72,7 @@ export default async function RndPage() {
             ))}
             {produkList.length === 0 && (
               <tr>
-                <td className="px-4 py-8 text-center text-zinc-500" colSpan={14}>
+                <td className="px-4 py-8 text-center text-zinc-500" colSpan={11}>
                   Belum ada produk.{" "}
                   <Link href="/rnd/baru" className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
                     Tambah produk baru
