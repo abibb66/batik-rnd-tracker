@@ -1,8 +1,8 @@
 import { extractDriveFileId, driveThumbnailUrl } from "@/lib/drive";
 
 const SIZE_CLASS = {
-  sm: "w-32 aspect-[3/5]",
-  lg: "w-44 aspect-[3/5]",
+  sm: "w-32 max-w-none aspect-[3/5]",
+  lg: "w-44 max-w-none aspect-[3/5]",
 };
 
 export function DriveThumbnail({
